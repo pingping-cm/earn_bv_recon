@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import shutil
 from check_breaks import *
-from SIM_YF_income import *
+# from SIM_YF_income import *
 from sklearn.datasets import load_iris
 
 from datetime import datetime, timezone, timedelta
@@ -97,6 +97,41 @@ def get_rfqs(start_time, end_time):
     query_volumes = text("""
         SELECT * FROM RequestForQuotes
         WHERE acceptedAt IS NOT NULL
+        AND executedAt IS NOT NULL
+        AND executedAt BETWEEN :start_time AND :end_time;
+    """)
+
+    with sql.connect() as db:
+        result = db.execute(query_volumes, {
+            "start_time": start_time,
+            "end_time": end_time
+        })
+        df = pd.DataFrame(result.fetchall(), columns=result.keys())
+    return df
+
+def get_rfqs(start_time, end_time):
+
+    query_volumes = text("""
+        SELECT * FROM RequestForQuotes
+        WHERE acceptedAt IS NOT NULL
+        AND executedAt IS NOT NULL
+        AND executedAt BETWEEN :start_time AND :end_time;
+    """)
+
+    with sql.connect() as db:
+        result = db.execute(query_volumes, {
+            "start_time": start_time,
+            "end_time": end_time
+        })
+        df = pd.DataFrame(result.fetchall(), columns=result.keys())
+    return df
+
+def get_rfqs_otc(start_time, end_time):
+
+    query_volumes = text("""
+        SELECT * FROM RequestForQuotes
+        WHERE organizationId IN (4,7)
+        AND acceptedAt IS NOT NULL
         AND executedAt IS NOT NULL
         AND executedAt BETWEEN :start_time AND :end_time;
     """)
