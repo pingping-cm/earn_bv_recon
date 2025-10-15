@@ -132,8 +132,7 @@ def get_rfqs_otc(start_time, end_time):
         SELECT * FROM RequestForQuotes
         WHERE organizationId IN (4,7)
         AND acceptedAt IS NOT NULL
-        AND executedAt IS NOT NULL
-        AND executedAt BETWEEN :start_time AND :end_time;
+        AND acceptedAt BETWEEN :start_time AND :end_time;
     """)
 
     with sql.connect() as db:

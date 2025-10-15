@@ -34,9 +34,10 @@ def rewards_received(start_date, end_date):
     return df
 
 def get_loan_interests(df):
+    df["revenue_native"] = pd.to_numeric(df["revenue_native"], errors="coerce").fillna(0.0)
+
     df = (df.groupby(["period", "asset"], as_index=False)
       .agg(revenue_native=("revenue_native", "sum")))
-
     df = df.sort_values("asset", ascending=True)
 
     return df

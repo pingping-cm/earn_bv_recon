@@ -55,7 +55,7 @@ def aggregate_buybacks(df):
 #     return results
 
 
-def aggregate_buybacks_by_period(df, period="W"):
+def aggregate_buybacks_by_period(df, period):
     """
     Aggregate BUY-side buybacks by period and entity (BLOX/CM),
     stacked into a single DataFrame.
@@ -86,7 +86,7 @@ def aggregate_buybacks_by_period(df, period="W"):
         return pd.DataFrame(columns=["period", "entity", "baseAsset", "total_quantity", "total_quoted_nominal"])
 
     # Period + entity
-    df["period"] = df["executedAt"].dt.to_period(period)
+    df["period"] = df["createdAt"].dt.to_period(period)
     df["entity"] = df["organizationId"].map(org_map)
 
     out = (
@@ -103,20 +103,20 @@ def aggregate_buybacks_by_period(df, period="W"):
 
 def aggregate_buybacks_current(df, period="W"):
 
-    df["executedAt"] = pd.to_datetime(df["executedAt"])
+    df["createdAt"] = pd.to_datetime(df["createdAt"])
     today = pd.Timestamp.today()
 
     if period == "W":
         # Current ISO year-week
         current_year, current_week = today.isocalendar().year, today.isocalendar().week
         mask = (
-            (df["executedAt"].dt.isocalendar().year == current_year) &
-            (df["executedAt"].dt.isocalendar().week == current_week)
+            (df["createdAt"].dt.isocalendar().year == current_year) &
+            (df["createdAt"].dt.isocalendar().week == current_week)
         )
     elif period == "M":
         mask = (
-            (df["executedAt"].dt.year == today.year) &
-            (df["executedAt"].dt.month == today.month)
+            (df["createdAt"].dt.year == today.year) &
+            (df["createdAt"].dt.month == today.month)
         )
     else:
         raise ValueError("period must be 'W' (week) or 'M' (month)")
